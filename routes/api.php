@@ -23,5 +23,6 @@ Route::group([
     //'prefix' => 'auth',
     'namespace' => 'Admin' //If the all the controllers related to API are inside API folder.
 ], function () {
-    Route::get('restaurants/{lang}', 'RestaurantsController@latestRestaurants');
+    Route::get('posts', 'PostsController@latestPosts');
+    Route::get('post/{id}', 'PostsController@singlePost');
 });

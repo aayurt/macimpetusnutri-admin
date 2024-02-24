@@ -15,6 +15,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
@@ -171,7 +172,7 @@ class PostsController extends Controller
      * @throws Exception
      * @return Response|bool
      */
-    public function bulkDestroy(BulkDestroyPost $request) : Response
+    public function bulkDestroy(BulkDestroyPost $request): Response
     {
         DB::transaction(static function () use ($request) {
             collect($request->data['ids'])
@@ -184,5 +185,35 @@ class PostsController extends Controller
         });
 
         return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
+    }
+
+    public function latestPosts(Request $request)
+    {
+        $posts = Post::with((['media']))->where(
+            "enabled",
+            "=",
+            1
+        )
+            ->orderBy('updated_at', 'DESC')
+            ->get();
+
+
+        return response()->json([
+            'response' => "success",
+            'data' => $posts,
+        ]);
+    }
+
+    public function singlePost($id, Request $request)
+    {
+        $post = Post::with((['media']))
+            ->orderBy('updated_at', 'DESC')
+            ->find($id);
+
+
+        return response()->json([
+            'response' => "success",
+            'data' => $post,
+        ]);
     }
 }
